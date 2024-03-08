@@ -1,0 +1,85 @@
+﻿@model IEnumerable<HandicraftStore.Models.Orders>
+
+@{
+    ViewData["Title"] = "GotoCart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Cart Items</h1>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            
+            <th style="display: none;">
+                @Html.DisplayNameFor(model => model.Products)
+            </th>
+            <th>
+                Image
+            </th>
+            <th>
+                Description
+            </th>
+            <th>
+               Amount
+            </th>
+   
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+           
+                <td style="display: none;">
+                    @Html.DisplayFor(modelItem => item.Products.Id)
+            </td>
+                <td>
+                    <img src="~/Images/@item.Products.ImageUrl" style="width:75px;height:75px;" />
+                </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Products.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+
+            <td>
+               
+                   @* <a asp-action="Delete" asp-controller="Orders" asp-route-id="@item.Id">Delete</a>*@
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger ml-1">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+<div>
+    <input type="submit" value="Check Out" onclick="UpdateOrderStatus('C')" class="btn btn-primary" /> |
+    <a asp-action="ProductList" class="btn btn-sm btn-info">Back to List</a>
+</div>
+
+
+@section Scripts {
+    <script>
+      
+        function UpdateOrderStatus( stat) {
+
+            $.ajax({
+                url: "@Url.Action("FinalizeOrder", "Orders")",
+                type: "POST",
+                data: {  Orderstatus: stat },
+                //
+                //success: function (data) {
+                //    alert(data);
+                //}
+                //,
+                //error: function (data) {
+                //    alert("error", data.responseText);
+                //}
+            });
+        }
+
+    </script>
+
+}

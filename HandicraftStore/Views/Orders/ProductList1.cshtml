@@ -1,0 +1,68 @@
+﻿@model IEnumerable<HandicraftStore.Models.Product>
+
+@{
+    ViewData["Title"] = "ProductList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Handicraft Items</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th> </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+     
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+                <td>
+                    <img src="~/Images/@item.ImageUrl" style="width:75px;height:75px;" />
+                </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+
+            <td>
+             @*   <a asp-action="ViewProduct" asp-route-id="@item.Id">View</a> |*@
+                    <a asp-action="ViewProduct" asp-route-id="@item.Id" class="btn btn-sm btn-info">View</a> 
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+@*<script>
+    $(document).ready(function () {
+        $.ajax({
+            type: "GET",
+            cache: false,
+            datatype:"json"
+                url: '@Url.Action("GetProducts", "Orders")'
+        });
+    });
+</script>*@
+
+@*<script type="text/jscript">
+    $(document).ready(function () {
+        $.getJSON('/Orders/GetProducts/' , function (data) {
+            var items = '<table><tr><th>Name</th><th>Address</th></tr>';
+            $.each(data, function (i, country) {
+                items += "<tr><td>" + country.Description + "</td><td>" + country.Amount + "</td></tr>";
+            });
+            items += "</table>";
+            $('#rData').html(items);
+        });
+    })
+</script>  *@

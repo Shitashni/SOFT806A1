@@ -1,0 +1,355 @@
+﻿@model IEnumerable<HandicraftStore.Models.Product>
+
+@{
+    ViewData["Title"] = "ProductList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<br />
+
+
+
+<div class="nav-container">
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="product-tab" data-toggle="tab" href="#tab1" aria-controls="product" aria-selected="true">Handicraft List</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="supplier-tab" data-toggle="tab" href="#tab2" aria-controls="supplier" aria-selected="false">Cart Items</a>
+        </li>
+    </ul>
+    <div id="tab1" class="tab-content p-3 border-right border-left">
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-4 col-xs-6 boarder-primary mb-3">
+                    <div class="card mb-3" style="max-width: 540px;">
+                        <div class="row g-0">
+                            <div class="col-md-12">
+                                <div class="card-header text-white bg-secondary">
+                                    <p class="card-text">
+                                        <h5 class="card-title">
+                                            @item.Description
+                                            <a class="text-white float-right"><i class="bi bi-penci-square"></i></a>
+                                        </h5>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <img src="~/Images/@item.ImageUrl" style='width: 100px; height: 100px;' width="100%" id="ImageUrl" alt="">
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card-body">
+                                    <p class="card-text" id="Desc">@item.Description</p>
+                                    <p class="card-text">@item.Amount</p>
+                                    @*<p class="card-text" id="ItemId">@item.Id</p>*@
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="card-footer">
+                                    <p class="card-text">abc</p>
+                                
+                                    <input type="button" class="btn btn-sm btn-info" value="Add to Cart" id="AddCart" onclick="AddtoCart('@item.Id')" />
+                                    <a asp-action="GotoCart" asp-controller="Orders" class="btn btn-sm btn-info">View Cart Items</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div id="tab2" class="tab-content">
+        <div class="container">
+            <br />
+            <div class="row">
+                <div class="col-sm-6">
+                    <h6>Items In Cart </h6>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-sm-6">
+                    <table id="CartItems" class="table table-bordered table-condensed table-striped">
+                        <thead>
+                            <tr>
+                                <th style="display: none;"> </th>
+                                <th>Image</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th></th>
+
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+
+        <br />
+        <input type="button" value="Check Out" id="SaveCartItems" onclick="SaveCartItems();" />
+        <br />
+
+    </div>
+</div>
+
+
+
+
+@*<input type="button" value="Save" id="Submit" />*@
+
+
+
+@section Scripts {
+    <script>
+        var cartlist;
+
+        function Checkout() {
+            $.ajax({
+                url: "@Url.Action("GotoCart", "Orders")",
+                type: "POST"
+               
+            });
+        }
+
+
+        function AddtoCart(ctl) {
+            $("#cart .item").each(function () {
+                var price = parseFloat($(this).data("price"));
+                cartValue += price;
+            });
+         
+
+            $.ajax({
+                url: "@Url.Action("SaveCartItems", "Orders")",
+                type: "POST",
+                data: { id: ctl },
+                //data: { id: Id, desc: Desc, amount: Amt, imageurl: imageurl },
+                //success: function (data) {
+                //    alert(data);
+                //}
+                //,
+                //error: function (data) {
+                //    alert("error", data.responseText);
+                //}
+            });
+            //if ($("#CartItems tbody").length == 0) {
+            //    $("#CartItems").append("<tbody></tbody>");
+            //}
+
+            //_row = $(ctl).parents("tr");
+            //var cols = _row.children("td");
+
+            //$("#CartItems tbody").append("<tr class='item'>" +
+            //    "<td style='display: none;'> " + $(cols[0]).text() + " < /td>" +
+            //    "<td>" + "<img src='" + $(cols[1]).text() + "' style='width: 75px; height: 75px; '" + " </td>" +
+            //    "<td>" + $(cols[2]).text() + "</td>" +
+            //    "<td>" + $(cols[3]).text() + "</td>" +
+            //    "<td>" +
+            //    "<input type='button' value = 'delete'  onclick = 'productDelete(this);' />" +
+            //    "</td>" +
+            //    "</tr>"
+
+            //);
+        }
+        function productDelete(ctl) {
+            $(ctl).parents("tr").remove();
+        }
+
+        function SaveCartItems() {
+            var rowCount = $('#CartItems tr').length;
+            alert(rowCount);
+
+            $("#CartItems tr:gt(0)").each(function () {
+                var Id = $(this).find("td").eq(0).html();
+                var imageurl = $(this).find("td").eq(1).html();
+                var Desc = $(this).find("td").eq(2).html();
+                var Amt = $(this).find("td").eq(3).html();
+
+                $.ajax({
+                    url: "@Url.Action("SaveCartItems", "Orders")",
+                    type: "POST",
+                    data: { id: Id, desc: Desc, amount: Amt, imageurl: imageurl },
+                    //
+                    success: function (data) {
+                        alert(data);
+                    }
+                    ,
+                    error: function (data) {
+                        alert("error", data.responseText);
+                    }
+                });
+                alert(quantity1);
+
+            });
+
+
+        }
+
+        $('#Save').click(function () {
+            var url = "/Orders/GetProducts";
+            $.getJSON(url, null, function (data) {
+                $(data).each(function () {
+                    alert(this.Description);
+                })
+
+                $("#rData").html(data);
+
+                debugger;
+            });
+        })
+
+
+        $(document).ready(function () {
+            $('#submitbutton').click(function (e) {
+                var pos = $(this).parent().find('.card-text').val();
+                alert(pos);
+               
+            });
+
+            $('.nav a').click(function () {
+                var tabId = $(this).attr('href').substr(1);
+                $('.tab-content').hide();
+                $('#' + tabId).show();
+            });
+
+            // Show the first tab by default
+            $('.nav li:first-child a').click();
+
+            $("#Submit").click(function (e) {
+                if ($("#CartItems tbody").length == 0)
+                    alert("Username cannot be empty");
+                else {
+                    //var table = document.getElementById('CartItems'), rIndex;
+                    //for ( var i = 0; i < table.rows.length; i++;)
+                    //{
+                    //    table.rows[i].onclick = function()
+                    //    {
+                    //        rIndex = this.rowIndex;
+                    //        document.getElementById("fname").value = this.cells[0].innerHTML;
+
+                    //    }
+                    //}
+
+                    $("#CartItems tr").each(function () {
+                        var quantity1 = $(this).find("td").eq(1).html();
+                        if (quantity1 == "undefined") {
+
+                        }
+                        else {
+                            // alert(index);
+                            //console.log(index);
+                            alert(quantity1);
+                        }
+                        //var quantity2 = $(this).find("input.id").val();
+                    });
+
+                    //$.ajax({
+                    //    type: "POST",
+                    //    url: "/Home/GetSecuredData",
+                    //    contentType: "application/json; charset=utf-8",
+                    //    data: '{"userName":"' + $("#usernameInput").val() + '","password":"' + $("#passwordInput").val() + '"}',
+                    //    dataType: "html",
+                    //    success: function (result, status, xhr) {
+                    //        $("#dataDiv").html(result);
+                    //    },
+                    //    error: function (xhr, status, error) {
+                    //        $("#dataDiv").html("Result: " + status + " " + error + " " + xhr.status + " " + xhr.statusText)
+                    //    }
+                    //});
+                }
+                return false;
+            });
+
+            $.ajax({
+                type: "Post",
+                url: "/Orders/GetProducts",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if ($("#productTable tbody").length == 0) {
+                        $("#productTable").append("<tbody></tbody>");
+                    }
+
+                    $(response).each(function () {
+                        $("#productTable tbody").append("<tr>" +
+                            "<td>" + this.id + "</td>" +
+                            "<td>" + this.description + "</td>" +
+                            "<td>" + this.amount + "</td>" +
+                            "<td>" +
+                            "<img src='~/Images/" + this.imageurl + "' style = 'width:75px;height:75px;' />" + "</td>" +
+                            "<td>" +
+                            "<button type='button' onclick=''productDelete(this);'' class='btn btn-default'>" +
+                            "<span class='glyphicon glyphicon-remove' />" +
+                            "</button>" +
+                            "</td>" +
+                            //            "<td>" +
+                            //            "<button type=" + "button" + "  onclick = " + "productDelete(this);" +
+                            //         "class= " + "btn btn-default " + ">" +
+                            //"<span class='glyphicon glyphicon-remove' />" +
+                            //            "</button>" +
+                            //            "</td>" +
+                            "</tr>");
+
+                        // alert("<img src='~/Images/" + this.imageUrl + "' style = 'width:75px;height:75px;' />");
+
+                    });
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+
+
+
+
+            //function productDelete(id) {
+            //    // $(ctl).parents("tr").remove();
+            //    var row = $("#productTable button[data-id='" + id + "']")
+            //        .parents("tr")[0];
+            //    // Add changed product to table
+            //    // $(row).after(productBuildTableRow(id));
+            //    // Remove original product
+            //    $(row).remove();
+            //}
+        })
+
+
+
+
+                //var supplierLoaded = false;
+                //var ordersLoaded = false;
+                ////var productid = document.getElementById('Product_ProductId').value;
+                //load = function (url, el) {
+                //    fetch(url)
+                //        .then((response) => {
+                //            return response.text();
+                //        })
+                //        .then((result) => {
+                //            document.getElementById(el).innerHTML = result;
+                //        });
+                //}
+                //document.querySelectorAll('a[data-toggle="tab"]').forEach(el => el.addEventListener('click', (e) => {
+                //    switch (e.target.getAttribute('aria-controls')) {
+                //        case "supplier":
+                //            //if (!supplierLoaded) {
+                //            //    load(`/tabs/supplier?productid=${productid}`, 'supplier');
+                //            //}
+                //            supplierLoaded = true;
+                //            break;
+                //        case "orders":
+                //            if (!ordersLoaded) {
+                //               // load(`/tabs/supplier?productid=${productid}`, 'orders')
+                //                ordersLoaded = true;
+                //            }
+                //            break;
+                //    }
+                //}));
+    </script>
+}
+
+
